@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +29,7 @@ internal fun BalanceCard(
     toppedUpBalance: String,
     totalCostCny: Double? = null,
     refreshCount: Int = 0,
+    onRechargeClick: () -> Unit = {},
 ) {
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -64,12 +67,18 @@ internal fun BalanceCard(
                         color = Color.White.copy(alpha = 0.7f),
                         letterSpacing = 1.sp,
                     )
-                    StatusChip(
-                        text = statusText,
-                        color = statusColor,
-                        containerColor = Color.White.copy(alpha = 0.2f),
-                        labelColor = Color.White,
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RechargePill(onClick = onRechargeClick)
+                        StatusChip(
+                            text = statusText,
+                            color = statusColor,
+                            containerColor = Color.White.copy(alpha = 0.2f),
+                            labelColor = Color.White,
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(3.dp))
@@ -143,6 +152,36 @@ internal fun BalanceCard(
     }
 
     Spacer(modifier = Modifier.height(8.dp))
+}
+
+/**
+ * 充值入口小胶囊：点击在 App 内打开 DeepSeek 平台充值页（WebView）。
+ * 白色半透明底与旁边状态芯片同材质，浮在余额卡品牌渐变之上。
+ */
+@Composable
+private fun RechargePill(onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.extraLarge,
+        color = Color.White.copy(alpha = 0.2f),
+        contentColor = Color.White,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null,
+                modifier = Modifier.size(12.dp),
+            )
+            Text(
+                text = "充值",
+                style = MaterialTheme.typography.labelSmall,
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true)

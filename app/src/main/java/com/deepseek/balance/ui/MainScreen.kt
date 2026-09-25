@@ -53,6 +53,7 @@ fun MainScreen(
     hasWebToken: Boolean,
     webTokenInvalid: Boolean = false,
     onWebLoginClick: () -> Unit = {},
+    onRechargeClick: () -> Unit = {},
     loadRangeDaily: suspend (start: java.time.LocalDate, end: java.time.LocalDate) -> List<com.deepseek.balance.model.ModelDailyUsage>? =
         { _, _ -> null },
     alertEnabled: Boolean = false,
@@ -166,6 +167,7 @@ fun MainScreen(
                         toppedUpBalance = toppedUpBalance,
                         totalCostCny = usage?.totalCostCny,
                         refreshCount = refreshCount,
+                        onRechargeClick = onRechargeClick,
                     )
                 }
 

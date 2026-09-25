@@ -43,6 +43,7 @@ import com.deepseek.balance.ui.BottomTabs
 import com.deepseek.balance.ui.NavGlassTuning
 import com.deepseek.balance.ui.LocalLiquidCardBackdrop
 import com.deepseek.balance.ui.MainScreen
+import com.deepseek.balance.ui.RechargeScreen
 import com.deepseek.balance.ui.SettingsScreen
 import com.deepseek.balance.ui.WebLoginScreen
 import com.deepseek.balance.ui.theme.DeepSeekBalanceTheme
@@ -302,6 +303,9 @@ private fun BalanceAppContent(
 
     // 网页一键登录（WebView 覆盖层）
     var showWebLogin by remember { mutableStateOf(false) }
+
+    // 充值（WebView 覆盖层，复用网页令牌恢复登录态）
+    var showRecharge by remember { mutableStateOf(false) }
 
     // 标记当前页面，便于在 Logcat 中区分主界面/设置页的掉帧
     LaunchedEffect(showSettings) {
@@ -603,6 +607,7 @@ private fun BalanceAppContent(
                     hasWebToken = webToken.isNotBlank(),
                     webTokenInvalid = webTokenInvalid,
                     onWebLoginClick = { showWebLogin = true },
+                    onRechargeClick = { showRecharge = true },
                     loadRangeDaily = loadRangeDaily,
                     alertEnabled = alertEnabled,
                     alertThreshold = alertThreshold.toDoubleOrNull() ?: 50.0,
@@ -702,6 +707,23 @@ private fun BalanceAppContent(
                     scope.launch { doRefresh() }
                 },
                 onClose = { showWebLogin = false },
+            )
+        }
+
+        // ---- 充值（WebView 全屏覆盖层，余额卡片入口） ----
+        if (showRecharge) {
+            RechargeScreen(
+                webToken = webToken,
+                onTokenUpdated = { token ->
+                    // 页面内重新登录/令牌刷新：回存网页令牌，用量查询同步恢复
+                    webToken = token
+                    prefs.edit().putString("web_token", token).apply()
+                },
+                onClose = {
+                    showRecharge = false
+                    // 充值/重新登录回来后静默刷新一次，余额尽快反映到卡片
+                    scope.launch { doRefresh(showErrors = false) }
+                },
             )
         }
     }

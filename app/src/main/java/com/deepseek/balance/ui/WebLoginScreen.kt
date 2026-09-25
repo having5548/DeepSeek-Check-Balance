@@ -44,7 +44,8 @@ import kotlinx.coroutines.delay
 
 // 登录页（未登录时 SPA 会重定向到这里；登录成功后在 localStorage 写入 userToken）
 private const val LOGIN_URL = "https://platform.deepseek.com/login"
-private const val TOKEN_KEY = "userToken"
+// TOKEN_KEY 与下面的探测/光标修复 JS 供充值页（RechargeScreen）复用，故 internal
+internal const val TOKEN_KEY = "userToken"
 
 // 修复 vivo/OriginOS 等 ROM 的 WebView 输入法光标 bug：
 // 这些机型上，IME 在 <input>/<textarea> 提交字符后会把插入点（光标）留在最前面，
@@ -52,7 +53,7 @@ private const val TOKEN_KEY = "userToken"
 // 把光标强制拉回文本末尾，保证数字往后排。
 // 注意：只在「字符数增加」（输入）时拉回；删除（字符数减少）时不动，
 // 否则会打断输入法的「长按快速删除」。
-private const val CARET_FIX_JS = """
+internal const val CARET_FIX_JS = """
 (function(){
   function fixCaret(el){
     if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) return;
@@ -76,7 +77,7 @@ private const val CARET_FIX_JS = """
 // DeepSeek 未登录时 userToken = {"value":null,"__version":"0"}（占位对象），
 // 登录成功后 value 变为真实令牌字符串。必须取 .value 且非空，才算登录成功。
 // 同时兼容极少数“裸令牌字符串”存储形态。
-private const val TOKEN_PROBE_JS = """
+internal const val TOKEN_PROBE_JS = """
 (function(){
   try {
     var raw = localStorage.getItem('$TOKEN_KEY');
@@ -264,7 +265,7 @@ fun WebLoginScreen(
  * evaluateJavascript 回调值是 JSON 字符串（带两端引号）或 "null"，
  * 去掉引号还原为原始 token。
  */
-private fun String?.parseJsString(): String {
+internal fun String?.parseJsString(): String {
     if (this == null) return ""
     val v = this.trim()
     if (v == "null" || v == "undefined" || v.isEmpty()) return ""
