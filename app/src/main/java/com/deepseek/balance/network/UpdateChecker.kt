@@ -36,7 +36,8 @@ data class SourceProbe(
  */
 object UpdateChecker {
 
-    private const val REPO = "wc26322/DeepSeek-Check-Balance"
+    // 自发布：指向本仓库的 Releases（此前指向上游 wc26322，检查更新查不到自己的发版）
+    private const val REPO = "having5548/DeepSeek-Check-Balance"
     private const val LATEST_URL = "https://api.github.com/repos/$REPO/releases/latest"
     private const val RELEASES_PAGE_URL = "https://github.com/$REPO/releases/tag/"
 
