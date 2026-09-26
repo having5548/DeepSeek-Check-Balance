@@ -719,6 +719,11 @@ private fun BalanceAppContent(
                     webToken = token
                     prefs.edit().putString("web_token", token).apply()
                 },
+                onPaymentSuccess = {
+                    // 检测到充值成功（自动弹「充值成功」页时）：立即静默刷新余额，
+                    // 用户点确定回到主界面即见新金额
+                    scope.launch { doRefresh(showErrors = false) }
+                },
                 onClose = {
                     showRecharge = false
                     // 充值/重新登录回来后静默刷新一次，余额尽快反映到卡片
